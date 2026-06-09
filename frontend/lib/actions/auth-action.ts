@@ -1,3 +1,5 @@
+"use server";
+
 import {
   loginApi,
   LoginPayload,
@@ -5,10 +7,16 @@ import {
   RegisterPayload,
 } from "../api/auth";
 
-export const registerAction = async (payload: RegisterPayload) => {
+import {
+  setTokenCookie,
+  storeUserData,
+} from "@/lib/cookies";
+
+export const registerAction = async (
+  payload: RegisterPayload
+) => {
   try {
-    const response = await registerApi(payload);
-    return response;
+    return await registerApi(payload);
   } catch (error: any) {
     return (
       error.response?.data || {
@@ -19,9 +27,20 @@ export const registerAction = async (payload: RegisterPayload) => {
   }
 };
 
-export const loginAction = async (payload: LoginPayload) => {
+export const loginAction = async (
+  payload: LoginPayload
+) => {
   try {
     const response = await loginApi(payload);
+
+    if (response.data.token) {
+      await setTokenCookie(response.data.token);
+    }
+
+    if (response.data.user) {
+      await storeUserData(response.data.user);
+    }
+
     return response;
   } catch (error: any) {
     return (
