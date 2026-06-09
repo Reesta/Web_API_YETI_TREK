@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginAction } from "../../../lib/actions/auth-action";
-import { setCookie } from "../../../lib/cookies";
 import { LoginFormValues, validateLoginForm } from "./schema";
 
 export default function LoginForm() {
@@ -18,7 +17,9 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
@@ -27,7 +28,9 @@ export default function LoginForm() {
     setError("");
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
     const validationError = validateLoginForm(formData);
@@ -39,25 +42,25 @@ export default function LoginForm() {
 
     setIsLoading(true);
 
-    const response = await loginAction({
-      email: formData.email,
-      password: formData.password,
-    });
+    try {
+      const response = await loginAction({
+        email: formData.email,
+        password: formData.password,
+      });
 
-    setIsLoading(false);
+      if (!response?.success) {
+        setError(response?.message || "Login failed");
+        return;
+      }
 
-    if (response?.success === false) {
-      setError(response.message || "Login failed");
-      return;
+      // Cookie is stored in loginAction
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Login Error:", error);
+      setError("Something went wrong");
+    } finally {
+      setIsLoading(false);
     }
-
-    const token = response?.token || response?.accessToken;
-
-    if (token) {
-      setCookie("token", token);
-    }
-
-    router.push("/dashboard");
   };
 
   return (
@@ -68,7 +71,9 @@ export default function LoginForm() {
         <div className="auth-left-content">
           <h1>Welcome Back</h1>
 
-          <p>Log in to continue your adventure with Yeti Trek.</p>
+          <p>
+            Log in to continue your adventure with Yeti Trek.
+          </p>
 
           <div className="features">
             <div className="feature-item">
@@ -92,9 +97,16 @@ export default function LoginForm() {
       <div className="auth-form-section">
         <div className="auth-card login-card">
           <h2>Login</h2>
-          <p className="subtitle">Access your Yeti Trek account.</p>
 
-          {error && <p className="message error-message">{error}</p>}
+          <p className="subtitle">
+            Access your Yeti Trek account.
+          </p>
+
+          {error && (
+            <p className="message error-message">
+              {error}
+            </p>
+          )}
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -102,6 +114,7 @@ export default function LoginForm() {
 
               <div className="input-box">
                 <span>✉</span>
+
                 <input
                   type="email"
                   name="email"
@@ -117,6 +130,7 @@ export default function LoginForm() {
 
               <div className="input-box">
                 <span>▢</span>
+
                 <input
                   type="password"
                   name="password"
@@ -127,13 +141,20 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <button type="submit" className="auth-btn" disabled={isLoading}>
-              {isLoading ? "Logging in..." : "Login  →"}
+            <button
+              type="submit"
+              className="auth-btn"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Login →"}
             </button>
           </form>
 
           <p className="auth-link">
-            Don&apos;t have an account? <Link href="/register">Register</Link>
+            Don't have an account?{" "}
+            <Link href="/register">
+              Register
+            </Link>
           </p>
         </div>
       </div>
