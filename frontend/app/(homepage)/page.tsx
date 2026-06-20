@@ -5,12 +5,12 @@ import {
   Mountain,
   Shield,
   Headphones,
+  Tent,
 } from "lucide-react";
 
 export default function Home() {
   return (
     <section className="relative min-h-screen overflow-hidden">
-      {/* Background Image */}
       <Image
         src="/home.png"
         alt="Mountain"
@@ -20,80 +20,72 @@ export default function Home() {
         className="object-cover"
       />
 
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/55" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#03070d]/95 via-[#07101a]/55 to-[#120b05]/35" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#04080e]/65 via-transparent to-[#04080e]/25" />
 
-      {/* Content */}
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-8">
-        <div className="max-w-[620px] pt-16">
-          {/* Tagline */}
-          <div className="mb-8 flex items-center gap-4">
-            <div className="h-[2px] w-8 bg-[#D89A2B]" />
-
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#D89A2B]">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6 pb-32 pt-24">
+        <div className="max-w-[590px]">
+          <div className="mb-6 flex items-center gap-4">
+            <div className="h-[2px] w-7 bg-[#D89A2B]" />
+            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[#D89A2B]">
               Your Journey. Our Expertise.
             </p>
           </div>
 
-          {/* Heading */}
           <h1 className="leading-[0.95] font-extrabold">
-            <span className="block text-6xl md:text-7xl text-white">
+            <span className="block text-6xl text-white md:text-7xl">
               Welcome to
             </span>
 
-            <span className="block mt-2 text-6xl md:text-7xl text-[#D89A2B]">
+            <span className="mt-2 block text-6xl text-[#D89A2B] md:text-7xl">
               Yeti Trek
             </span>
           </h1>
 
-          {/* Description */}
-          <p className="mt-8 max-w-[560px] text-lg leading-relaxed text-gray-300">
+          <p className="mt-7 max-w-[560px] text-xl leading-relaxed text-slate-200">
             Experience the Himalayas through the lens of
             local expertise and cutting-edge safety.
             Your journey to the roof of the world starts
             here.
           </p>
 
-          {/* Button */}
-          <div className="mt-10">
+          <div className="mt-8 flex flex-wrap gap-4">
             <Link
               href="/register"
-              className="inline-flex items-center rounded-xl bg-[#D89A2B] px-8 py-4 text-base font-semibold text-black shadow-lg transition-all duration-300 hover:scale-105"
+              className="inline-flex h-12 items-center gap-2 rounded-md bg-[#D89A2B] px-7 text-sm font-extrabold text-white shadow-lg transition hover:bg-[#e7ad3e]"
             >
+              <Tent size={17} />
               Start Your Journey
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Stats Card */}
       <div className="absolute bottom-8 left-1/2 z-20 w-full max-w-6xl -translate-x-1/2 px-6">
-        <div className="rounded-3xl border border-white/10 bg-[#07121D]/75 p-8 backdrop-blur-xl">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <Stat
-              icon={<Users size={26} />}
-              title="12,000+"
-              subtitle="Happy Trekkers"
-            />
+        <div className="grid grid-cols-2 gap-6 rounded-2xl border border-white/10 bg-[#07121D]/86 px-8 py-8 shadow-2xl backdrop-blur-xl md:grid-cols-4">
+          <Stat
+            icon={<Users size={28} />}
+            title="12,000+"
+            subtitle="Happy Trekkers"
+          />
 
-            <Stat
-              icon={<Mountain size={26} />}
-              title="150+"
-              subtitle="Expeditions"
-            />
+          <Stat
+            icon={<Mountain size={28} />}
+            title="150+"
+            subtitle="Expeditions"
+          />
 
-            <Stat
-              icon={<Shield size={26} />}
-              title="98%"
-              subtitle="Summit Success"
-            />
+          <Stat
+            icon={<Shield size={28} />}
+            title="98%"
+            subtitle="Summit Success"
+          />
 
-            <Stat
-              icon={<Headphones size={26} />}
-              title="24/7"
-              subtitle="Support"
-            />
-          </div>
+          <Stat
+            icon={<Headphones size={28} />}
+            title="24/7"
+            subtitle="Support"
+          />
         </div>
       </div>
     </section>
@@ -116,11 +108,11 @@ function Stat({
       </div>
 
       <div>
-        <h3 className="text-3xl font-bold text-white">
+        <h3 className="text-4xl font-black leading-none text-white">
           {title}
         </h3>
 
-        <p className="mt-1 text-sm text-gray-400">
+        <p className="mt-2 text-sm text-slate-400">
           {subtitle}
         </p>
       </div>

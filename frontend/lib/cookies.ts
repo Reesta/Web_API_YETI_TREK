@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { YetiTrekUser } from "./api/auth";
 
 export async function setTokenCookie(token: string) {
   const cookieStore = await cookies();
@@ -19,7 +20,7 @@ export async function getTokenCookie() {
   return cookieStore.get("auth_token")?.value || null;
 }
 
-export async function storeUserData(userData: any) {
+export async function storeUserData(userData: YetiTrekUser) {
   const cookieStore = await cookies();
 
   cookieStore.set({
@@ -29,6 +30,21 @@ export async function storeUserData(userData: any) {
     httpOnly: true,
     sameSite: "lax",
   });
+}
+
+export async function getStoredUserData(): Promise<YetiTrekUser | null> {
+  const cookieStore = await cookies();
+  const value = cookieStore.get("user_data")?.value;
+
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(value) as YetiTrekUser;
+  } catch {
+    return null;
+  }
 }
 
 export async function clearAuthCookies() {
