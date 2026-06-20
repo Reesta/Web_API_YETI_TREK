@@ -2,13 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { loginAction } from "../../../lib/actions/auth-action";
 import { LoginFormValues, validateLoginForm } from "./schema";
 
 export default function LoginForm() {
-  const router = useRouter();
-
   const [formData, setFormData] = useState<LoginFormValues>({
     email: "",
     password: "",
@@ -54,7 +51,7 @@ export default function LoginForm() {
       }
 
       // Cookie is stored in loginAction
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (error) {
       console.error("Login Error:", error);
       setError("Something went wrong");
@@ -151,7 +148,7 @@ export default function LoginForm() {
           </form>
 
           <p className="auth-link">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/register">
               Register
             </Link>
