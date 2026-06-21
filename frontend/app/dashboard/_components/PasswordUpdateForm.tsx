@@ -4,6 +4,12 @@ import { useState } from "react";
 import { KeyRound, Save } from "lucide-react";
 import { updateProfileAction } from "@/lib/actions/auth-action";
 
+const labelClass = "grid gap-2";
+const labelTextClass =
+  "flex items-center gap-2 text-xs font-black uppercase tracking-[0.08em] text-[#d9dee5]";
+const inputClass =
+  "h-[50px] w-full rounded-lg border border-[#3a444f] bg-[#101820] px-3.5 text-[15px] text-white outline-none transition placeholder:text-[#7f8b98] focus:border-[#e0a12b] focus:ring-4 focus:ring-[#e0a12b]/10";
+
 export default function PasswordUpdateForm() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -43,8 +49,8 @@ export default function PasswordUpdateForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="yt-form">
-      <div className="yt-form-stack">
+    <form onSubmit={handleSubmit} className="w-full">
+      <div className="grid max-w-[560px] gap-[18px]">
         <PasswordField
           label="Current Password"
           name="currentPassword"
@@ -62,13 +68,13 @@ export default function PasswordUpdateForm() {
         />
       </div>
 
-      {error && <p className="yt-form-error">{error}</p>}
-      {message && <p className="yt-form-success">{message}</p>}
+      {error && <p className="mt-4 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-[#ffb1b1]">{error}</p>}
+      {message && <p className="mt-4 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-3 text-sm text-[#a7efc4]">{message}</p>}
 
       <button
         type="submit"
         disabled={isSaving}
-        className="yt-primary-btn"
+        className="mt-5 inline-flex h-[50px] items-center justify-center gap-2 rounded-lg bg-[#e0a12b] px-5 text-[15px] font-black text-[#111] disabled:cursor-not-allowed disabled:opacity-65"
       >
         <Save size={18} />
         {isSaving ? "Saving..." : "Change Password"}
@@ -87,12 +93,13 @@ function PasswordField({
   placeholder: string;
 }) {
   return (
-    <label>
-      <span>
+    <label className={labelClass}>
+      <span className={labelTextClass}>
         <KeyRound size={16} />
         {label}
       </span>
       <input
+        className={inputClass}
         type="password"
         name={name}
         placeholder={placeholder}
