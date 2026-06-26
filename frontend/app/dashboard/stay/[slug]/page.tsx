@@ -145,13 +145,13 @@ export default async function StayDetailPage({
             <span className="text-xs text-[#8e9898]">per night before taxes</span>
           </div>
 
-          <button
-            type="button"
+          <Link
+            href={`/dashboard/stay/${stay.slug}/booking`}
             className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg border-0 bg-[#e9a127] text-sm font-black text-[#121a18] shadow-xl shadow-[#e9a127]/20 transition hover:bg-[#f0b13d]"
           >
             <CalendarDays size={16} />
             Book Now
-          </button>
+          </Link>
           </div>
 
           <div className="rounded-[18px] border border-white/10 bg-[#0d1314] p-6 shadow-2xl shadow-black/30">

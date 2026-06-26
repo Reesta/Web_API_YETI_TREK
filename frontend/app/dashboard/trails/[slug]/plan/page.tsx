@@ -119,12 +119,12 @@ export default async function TrekPlanPage({
             </strong>
           </div>
 
-          <button
-            type="button"
-            className="mt-8 h-14 w-full rounded-lg border-0 bg-[#e9a127] text-sm font-black text-[#121a18] shadow-xl shadow-[#e9a127]/20"
+          <Link
+            href={`/dashboard/trails/${trail.slug}/booking`}
+            className="mt-8 flex h-14 w-full items-center justify-center rounded-lg border-0 bg-[#e9a127] text-sm font-black text-[#121a18] shadow-xl shadow-[#e9a127]/20 transition hover:bg-[#f0b13d]"
           >
             Book all 5 Lodges
-          </button>
+          </Link>
         </aside>
       </div>
     </section>
