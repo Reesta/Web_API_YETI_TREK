@@ -119,6 +119,14 @@ export default function LoginForm() {
                   onChange={handleChange}
                 />
               </div>
+              <div className="mt-3 text-right">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm font-semibold text-[#e0a12b] transition hover:text-[#f2c400]"
+                >
+                  Forgot password?
+                </Link>
+              </div>
             </div>
 
             <div className="mb-5">

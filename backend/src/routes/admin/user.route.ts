@@ -5,11 +5,13 @@ import { adminMiddleware, authorizedMiddleware } from "../../middlewares/auth.mi
 const adminUserRouter = Router();
 const adminUserController = new AdminUserController();
 
-adminUserRouter.get(
-  "/",
-  authorizedMiddleware,
-  adminMiddleware,
-  adminUserController.getAllUsers,
-);
+adminUserRouter.use(authorizedMiddleware, adminMiddleware);
+
+adminUserRouter.get("/", adminUserController.getAllUsers);
+adminUserRouter.get("/:id", adminUserController.getUserById);
+adminUserRouter.post("/", adminUserController.createUser);
+adminUserRouter.put("/:id", adminUserController.updateUser);
+adminUserRouter.patch("/:id", adminUserController.updateUser);
+adminUserRouter.delete("/:id", adminUserController.deleteUser);
 
 export default adminUserRouter;
