@@ -1,8 +1,19 @@
 import Link from "next/link";
 import { ArrowRight, Clock3 } from "lucide-react";
-import { trails } from "./trail-data";
+import { getTrailsAction } from "@/lib/actions/trail-action";
+import { Trail } from "@/lib/api/trails";
+import { resolveImageUrl } from "@/lib/api/image-url";
 
-export default function TrailsPage() {
+const badgeClass = {
+  Easy: "bg-[#52a36d]",
+  Mod: "bg-[#d9a528]",
+  Hard: "bg-[#b84d54]",
+};
+
+export default async function TrailsPage() {
+  const result = await getTrailsAction();
+  const trails: Trail[] = result.success && result.data ? result.data : [];
+
   return (
     <section className="bg-[#252827] pb-8">
       <div className="overflow-hidden rounded-[18px] bg-[linear-gradient(90deg,rgba(3,8,13,0.55),rgba(3,8,13,0.05)),url('/trail1.png')] bg-cover bg-center px-12 py-12 shadow-2xl shadow-black/25 max-[700px]:px-6">
@@ -20,17 +31,17 @@ export default function TrailsPage() {
       </div>
 
       <div id="trail-list" className="mt-14 grid grid-cols-3 gap-7 max-[1100px]:grid-cols-2 max-[700px]:grid-cols-1">
-        {trails.map((trail) => (
+        {trails.length ? trails.map((trail) => (
           <article
             key={trail.title}
             className="overflow-hidden rounded-lg bg-[#121718] shadow-xl shadow-black/20"
           >
             <div
               className="relative h-[190px] bg-cover bg-center"
-              style={{ backgroundImage: `url(${trail.image})` }}
+              style={{ backgroundImage: `url(${resolveImageUrl(trail.image)})` }}
             >
               <span
-                className={`absolute left-4 top-4 rounded px-2 py-1 text-[9px] font-black uppercase text-white ${trail.badge}`}
+                className={`absolute left-4 top-4 rounded px-2 py-1 text-[9px] font-black uppercase text-white ${badgeClass[trail.difficulty]}`}
               >
                 {trail.difficulty}
               </span>
@@ -66,7 +77,11 @@ export default function TrailsPage() {
               </div>
             </div>
           </article>
-        ))}
+        )) : (
+          <div className="col-span-full rounded-lg border border-white/10 bg-[#121718] p-8 text-center text-[#aeb5b4]">
+            No trails are available yet.
+          </div>
+        )}
       </div>
     </section>
   );
