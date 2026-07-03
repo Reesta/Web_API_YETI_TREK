@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { BedDouble, Compass, Mountain, Route, SignalHigh } from "lucide-react";
 import { notFound } from "next/navigation";
-import { trails } from "../trail-data";
+import { getTrailBySlugAction } from "@/lib/actions/trail-action";
+import { Trail } from "@/lib/api/trails";
+import { resolveImageUrl } from "@/lib/api/image-url";
 
 export default async function TrailDetailPage({
   params,
@@ -9,7 +11,8 @@ export default async function TrailDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const trail = trails.find((item) => item.slug === slug);
+  const result = await getTrailBySlugAction(slug);
+  const trail = result.success ? (result.data as Trail | null) : null;
 
   if (!trail) {
     notFound();
@@ -23,11 +26,11 @@ export default async function TrailDetailPage({
   ];
 
   return (
-    <section className="grid gap-8">
+    <section className="grid gap-7">
       <div
-        className="relative overflow-hidden rounded-[18px] bg-cover bg-center px-10 py-24 shadow-2xl shadow-black/25 max-[700px]:px-6"
+        className="relative overflow-hidden rounded-[18px] bg-cover bg-center px-10 py-20 shadow-2xl shadow-black/25 max-[700px]:px-6 max-[700px]:py-14"
         style={{
-          backgroundImage: `linear-gradient(90deg, rgba(3, 8, 13, 0.72), rgba(3, 8, 13, 0.18)), url(${trail.image})`,
+          backgroundImage: `linear-gradient(90deg, rgba(3, 8, 13, 0.72), rgba(3, 8, 13, 0.18)), url(${resolveImageUrl(trail.image)})`,
         }}
       >
         <h1 className="text-[34px] font-black text-white md:text-[42px]">
@@ -53,22 +56,28 @@ export default async function TrailDetailPage({
         </div>
       </div>
 
-      <div className="-mt-14 grid gap-5 px-8 md:grid-cols-4 max-[700px]:mt-0 max-[700px]:px-0">
+      <div className="-mt-9 grid gap-4 px-10 sm:grid-cols-2 lg:grid-cols-4 max-[700px]:mt-0 max-[700px]:px-0">
         {stats.map((stat) => {
           const Icon = stat.icon;
 
           return (
             <div
               key={stat.label}
-              className="rounded-lg border border-white/5 bg-[#1f2221] p-6 shadow-xl shadow-black/25"
+              className="rounded-xl border border-white/10 bg-[#171b1a]/95 p-5 shadow-xl shadow-black/20 backdrop-blur"
             >
-              <Icon size={22} className="text-[#e9a127]" />
-              <p className="mt-5 text-[11px] font-black uppercase tracking-wider text-[#8d9695]">
-                {stat.label}
-              </p>
-              <strong className="mt-1 block text-xl font-black text-white">
-                {stat.value}
-              </strong>
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#e9a127]/10 text-[#e9a127]">
+                  <Icon size={19} />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-[#8d9695]">
+                    {stat.label}
+                  </p>
+                  <strong className="mt-1 block truncate text-lg font-black text-white">
+                    {stat.value}
+                  </strong>
+                </div>
+              </div>
             </div>
           );
         })}
