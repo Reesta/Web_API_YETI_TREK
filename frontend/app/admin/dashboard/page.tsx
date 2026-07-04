@@ -10,6 +10,7 @@ import {
   Database,
   Hotel,
   Map,
+  ReceiptText,
   ShieldCheck,
   Sparkles,
   Users,
@@ -19,8 +20,9 @@ import AdminLogoutButton from "../_components/AdminLogoutButton";
 
 const features = [
   { label: "User directory", detail: "Create, update, and remove accounts.", icon: Users, href: "/admin/users", tone: "bg-[#e9a127] text-[#17120a]", available: true },
-  { label: "Trail catalogue", detail: "Manage trek routes and trip details.", icon: Map, href: "#", tone: "bg-sky-400/15 text-sky-300", available: false },
-  { label: "Stay listings", detail: "Manage lodges and accommodation data.", icon: Hotel, href: "#", tone: "bg-emerald-400/15 text-emerald-300", available: false },
+  { label: "Trail catalogue", detail: "Manage trek routes and trip details.", icon: Map, href: "/admin/trails", tone: "bg-sky-400/15 text-sky-300", available: true },
+  { label: "Stay listings", detail: "Manage lodges and accommodation data.", icon: Hotel, href: "/admin/stays", tone: "bg-emerald-400/15 text-emerald-300", available: true },
+  { label: "Booking history", detail: "Review user trail and stay reservations.", icon: ReceiptText, href: "/admin/bookings", tone: "bg-violet-400/15 text-violet-300", available: true },
 ];
 
 export default async function AdminDashboardPage() {
