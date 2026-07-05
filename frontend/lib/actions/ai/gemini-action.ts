@@ -6,7 +6,30 @@ import { generateContent } from "@/lib/ai/gemini";
 const systemInstruction = "You are a friendly, witty agent. Explain complex topics using simple analogies and keep responses under two paragraphs."
 const contents = "Context: Respond to the user query in a concise and informative manner."
 
-export async function handleGenerateContent(prompt: string): Promise<any> {
+type GeminiResponse = {
+    candidates?: {
+        content?: {
+            parts?: {
+                text?: string;
+            }[];
+        };
+    }[];
+    message?: string;
+};
+
+type GenerateContentResult =
+    | {
+        success: true;
+        data: GeminiResponse;
+        message: string;
+    }
+    | {
+        success: false;
+        error?: true;
+        message: string;
+    };
+
+export async function handleGenerateContent(prompt: string): Promise<GenerateContentResult> {
     try {
         const response = await generateContent(systemInstruction, contents, prompt);
         
