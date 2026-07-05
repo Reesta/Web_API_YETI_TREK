@@ -71,16 +71,16 @@ export default function Page() {
 
         try {
             const result = await handleGenerateContent(trimmedPrompt);
-            const resultData = formatMessage(
-                result.data?.candidates?.[0]?.content?.parts?.[0]?.text,
-            );
+            const resultData = result.success
+                ? formatMessage(result.data.candidates?.[0]?.content?.parts?.[0]?.text)
+                : result.message || "Something went wrong.";
 
             setChatHistory((previousHistory) => [
                 ...previousHistory,
                 {
                     id: Date.now() + 1,
                     role: "assistant",
-                    content: result.success ? resultData : result.message || "Something went wrong.",
+                    content: resultData,
                 },
             ]);
         } catch (error) {

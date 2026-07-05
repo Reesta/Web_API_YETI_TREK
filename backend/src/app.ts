@@ -4,6 +4,12 @@ import path from "path";
 import multer from "multer";
 import userRoutes from "../src/routes/user.route";
 import adminUserRoutes from "../src/routes/admin/user.route";
+import trailRoutes from "../src/routes/trail.route";
+import adminTrailRoutes from "../src/routes/admin/trail.route";
+import stayRoutes from "../src/routes/stay.route";
+import adminStayRoutes from "../src/routes/admin/stay.route";
+import bookingRoutes from "../src/routes/booking.route";
+import adminBookingRoutes from "../src/routes/admin/booking.route";
 
 const app: Application = express();
 
@@ -26,7 +32,13 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/auth", userRoutes);
+app.use("/api/v1/trails", trailRoutes);
+app.use("/api/v1/stays", stayRoutes);
+app.use("/api/v1/bookings", bookingRoutes);
 app.use("/api/v1/admin/users", adminUserRoutes);
+app.use("/api/v1/admin/trails", adminTrailRoutes);
+app.use("/api/v1/admin/stays", adminStayRoutes);
+app.use("/api/v1/admin/bookings", adminBookingRoutes);
 
 app.use((req: Request, res: Response) => {
   return res.status(404).json({
@@ -41,7 +53,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof multer.MulterError || err.message === "Only image files are allowed") {
     const message =
       err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE"
-        ? "Profile image must be 5 MB or smaller"
+        ? "Image must be 5 MB or smaller"
         : err.message;
 
     return res.status(400).json({

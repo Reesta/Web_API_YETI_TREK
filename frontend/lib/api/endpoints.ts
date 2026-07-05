@@ -11,3 +11,8 @@ export const ADMIN_USER_ENDPOINTS = {
   LIST: "/admin/users",
   DETAIL: (id: string) => `/admin/users/${id}`,
 };
+
+export const ADMIN_TRAIL_ENDPOINTS = {
+  LIST: "/admin/trails",
+  DETAIL: (id: string) => `/admin/trails/${id}`,
+};
