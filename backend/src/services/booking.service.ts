@@ -89,8 +89,6 @@ export class BookingService {
       userId: new Types.ObjectId(userId),
     });
 
-    await this.sendBookingConfirmationEmail(booking);
-
     return this.toSafeBooking(booking);
   }
 
@@ -135,6 +133,10 @@ export class BookingService {
     const updatedBooking = await bookingRepository.update(bookingId, bookingData);
     if (!updatedBooking) {
       throw new HttpException(404, "Booking not found");
+    }
+
+    if (booking.status !== "Confirmed" && updatedBooking.status === "Confirmed") {
+      await this.sendBookingConfirmationEmail(updatedBooking);
     }
 
     return this.toSafeBooking(updatedBooking);
