@@ -1,6 +1,7 @@
 "use client";
 
-import { Bot, MessageCircle, Send, X } from "lucide-react";
+import Link from "next/link";
+import { BedDouble, Bot, Map, MessageCircle, Send, X } from "lucide-react";
 import {
   useEffect,
   useRef,
@@ -9,12 +10,16 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from "react";
-import { handleGenerateContent } from "@/lib/actions/ai/gemini-action";
+import {
+  handleGenerateContent,
+  type AiRecommendation,
+} from "@/lib/actions/ai/gemini-action";
 
 type ChatMessage = {
   id: number;
   role: "user" | "assistant";
   content: string;
+  recommendations?: AiRecommendation[];
 };
 
 const starterMessages: ChatMessage[] = [
@@ -25,14 +30,6 @@ const starterMessages: ChatMessage[] = [
       "Hi, I am your Yeti Trek assistant. Ask me about trails, stays, bookings, packing, or trek planning.",
   },
 ];
-
-const extractGeminiText = (value: unknown) => {
-  if (typeof value === "string" && value.trim()) {
-    return value.trim();
-  }
-
-  return "I could not generate a clear answer. Please try asking about trails, stays, bookings, or trekking plans.";
-};
 
 export default function AiChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,9 +68,7 @@ export default function AiChatWidget() {
     ]);
 
     const result = await handleGenerateContent(trimmedPrompt);
-    const message = result.success
-      ? extractGeminiText(result.data.candidates?.[0]?.content?.parts?.[0]?.text)
-      : result.message;
+    const message = result.success ? result.answer : result.message;
 
     setChatHistory((previousHistory) => [
       ...previousHistory,
@@ -81,6 +76,7 @@ export default function AiChatWidget() {
         id: Date.now() + 1,
         role: "assistant",
         content: message,
+        recommendations: result.success ? result.recommendations : [],
       },
     ]);
     setIsSending(false);
@@ -136,6 +132,44 @@ export default function AiChatWidget() {
                       {message.role === "user" ? "You" : "Assistant"}
                     </p>
                     <p className="whitespace-pre-wrap">{message.content}</p>
+                    {message.recommendations && message.recommendations.length > 0 ? (
+                      <div className="mt-3 space-y-2">
+                        {message.recommendations.map((item) => (
+                          <div
+                            key={`${item.type}-${item.slug}`}
+                            className="rounded-lg border border-white/10 bg-[#07101b] p-2"
+                          >
+                            <div className="flex items-start gap-2">
+                              <span className="mt-0.5 text-[#e9a127]">
+                                {item.type === "stay" ? <BedDouble size={15} /> : <Map size={15} />}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-black text-white">{item.title}</p>
+                                <p className="mt-0.5 line-clamp-2 text-xs leading-5 text-[#aeb9c7]">
+                                  {item.reason}
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  <Link
+                                    href={item.detailHref}
+                                    className="rounded-md border border-[#e9a127]/40 px-2.5 py-1 text-xs font-black text-[#f5c978] transition hover:bg-[#e9a127]/10"
+                                  >
+                                    View details
+                                  </Link>
+                                  {item.bookingHref ? (
+                                    <Link
+                                      href={item.bookingHref}
+                                      className="rounded-md bg-[#e9a127] px-2.5 py-1 text-xs font-black text-[#17100a] transition hover:bg-[#f2b440]"
+                                    >
+                                      Book
+                                    </Link>
+                                  ) : null}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ))}
