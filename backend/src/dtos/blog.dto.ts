@@ -27,6 +27,15 @@ export const SubmitStoryDTO = BlogSchema.pick({
 });
 export type SubmitStoryDTO = z.infer<typeof SubmitStoryDTO>;
 
+export const UpdateOwnStoryDTO = SubmitStoryDTO.pick({
+  title: true,
+  description: true,
+  content: true,
+  readingTime: true,
+  relatedTrailSlugs: true,
+}).partial();
+export type UpdateOwnStoryDTO = z.infer<typeof UpdateOwnStoryDTO>;
+
 export const CreateBlogCommentDTO = BlogCommentSchema.pick({
   text: true,
 }).extend({

@@ -7,7 +7,10 @@ import {
   addBlogCommentApi,
   getBlogBySlugApi,
   getBlogsApi,
+  getMyBlogsApi,
   submitStoryApi,
+  updateMyBlogApi,
+  deleteMyBlogApi,
 } from "@/lib/api/blogs";
 
 const failure = (error: unknown, fallback: string) => {
@@ -33,6 +36,25 @@ export const getBlogsAction = async (params?: { search?: string; category?: stri
   } catch (error) {
     return failure(error, "Unable to load blogs");
   }
+};
+
+export const getMyBlogsAction = async () => {
+  try {
+    const result = await getMyBlogsApi(await getUserToken());
+    return { success: true, data: result.data, meta: null, message: result.message };
+  } catch (error) {
+    return failure(error, "Unable to load your blog submissions");
+  }
+};
+
+export const updateMyBlogAction = async (id: string, payload: FormData) => {
+  try { const result = await updateMyBlogApi(await getUserToken(), id, payload); revalidatePath("/dashboard/profile"); revalidatePath("/admin/blogs"); revalidatePath("/"); return { success: true, data: result.data, message: result.message }; }
+  catch (error) { return failure(error, "Unable to update your story"); }
+};
+
+export const deleteMyBlogAction = async (id: string) => {
+  try { const result = await deleteMyBlogApi(await getUserToken(), id); revalidatePath("/dashboard/profile"); revalidatePath("/admin/blogs"); revalidatePath("/"); return { success: true, data: null, message: result.message }; }
+  catch (error) { return failure(error, "Unable to delete your story"); }
 };
 
 export const getBlogBySlugAction = async (slug: string) => {

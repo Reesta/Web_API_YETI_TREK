@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { CreateBlogCommentDTO, SubmitStoryDTO } from "../dtos/blog.dto";
+import { CreateBlogCommentDTO, SubmitStoryDTO, UpdateOwnStoryDTO } from "../dtos/blog.dto";
 import { BlogService } from "../services/blog.service";
 import { ApiResponseHelper } from "../uttils/apihelper.util";
 
@@ -56,7 +56,9 @@ export class BlogController {
         return ApiResponseHelper.error(res, z.prettifyError(storyData.error), 400);
       }
 
-      const story = await blogService.submitStory(storyData.data);
+      const userId = user?._id?.toString();
+      if (!userId) return ApiResponseHelper.error(res, "Unauthorized", 401);
+      const story = await blogService.submitStory(userId, storyData.data);
       return ApiResponseHelper.success(
         res,
         story,
@@ -70,6 +72,38 @@ export class BlogController {
         error.status || 500,
       );
     }
+  }
+
+  async getMyStories(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id?.toString();
+      if (!userId) return ApiResponseHelper.error(res, "Unauthorized", 401);
+      const stories = await blogService.getMyStories(userId, req.user?.fullName || "");
+      return ApiResponseHelper.success(res, stories, "Your stories fetched successfully");
+    } catch (error: Error | any) {
+      return ApiResponseHelper.error(res, error.message || "Failed to fetch your stories", error.status || 500);
+    }
+  }
+
+  async updateMyStory(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id?.toString();
+      if (!userId) return ApiResponseHelper.error(res, "Unauthorized", 401);
+      const parsed = UpdateOwnStoryDTO.safeParse({ ...req.body, relatedTrailSlugs: parseRelatedTrails(req.body.relatedTrailSlugs) });
+      if (!parsed.success) return ApiResponseHelper.error(res, z.prettifyError(parsed.error), 400);
+      if (!Object.keys(parsed.data).length && !req.file) return ApiResponseHelper.error(res, "Provide at least one field to update", 400);
+      const story = await blogService.updateOwnStory(userId, req.user?.fullName || "", req.params.id as string, parsed.data, req.file ? `/uploads/blogs/${req.file.filename}` : undefined);
+      return ApiResponseHelper.success(res, story, "Story updated and sent for admin approval");
+    } catch (error: Error | any) { return ApiResponseHelper.error(res, error.message, error.status || 500); }
+  }
+
+  async deleteMyStory(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id?.toString();
+      if (!userId) return ApiResponseHelper.error(res, "Unauthorized", 401);
+      await blogService.deleteOwnStory(userId, req.user?.fullName || "", req.params.id as string);
+      return ApiResponseHelper.success(res, null, "Story deleted successfully");
+    } catch (error: Error | any) { return ApiResponseHelper.error(res, error.message, error.status || 500); }
   }
 
   async addComment(req: Request, res: Response) {

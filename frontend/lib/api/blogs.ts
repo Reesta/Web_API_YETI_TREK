@@ -22,6 +22,7 @@ export type BlogComment = {
 
 export type Blog = {
   id: string;
+  userId?: string;
   slug: string;
   title: string;
   description: string;
@@ -48,6 +49,23 @@ export const getBlogsApi = async (params?: { search?: string; category?: string 
 
 export const getBlogBySlugApi = async (slug: string) => {
   const response = await axiosInstance.get(`/blogs/${slug}`);
+  return response.data;
+};
+
+export const getMyBlogsApi = async (token: string) => {
+  const response = await axiosInstance.get("/blogs/mine", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateMyBlogApi = async (token: string, id: string, payload: FormData) => {
+  const response = await axiosInstance.patch(`/blogs/mine/${id}`, payload, { headers: { Authorization: `Bearer ${token}` } });
+  return response.data;
+};
+
+export const deleteMyBlogApi = async (token: string, id: string) => {
+  const response = await axiosInstance.delete(`/blogs/mine/${id}`, { headers: { Authorization: `Bearer ${token}` } });
   return response.data;
 };
 

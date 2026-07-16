@@ -1,4 +1,4 @@
-import { CreateBlogCommentDTO, CreateBlogDTO, SubmitStoryDTO, UpdateBlogDTO } from "../dtos/blog.dto";
+import { CreateBlogCommentDTO, CreateBlogDTO, SubmitStoryDTO, UpdateBlogDTO, UpdateOwnStoryDTO } from "../dtos/blog.dto";
 import { HttpException } from "../exceptions/http-exception";
 import { IBlog } from "../models/blog.model";
 import { BlogMongoRepository } from "../repositories/blog.repository";
@@ -9,6 +9,7 @@ export class BlogService {
   private toSafeBlog(blog: IBlog) {
     return {
       id: blog._id,
+      userId: blog.userId,
       slug: blog.slug,
       title: blog.title,
       description: blog.description,
@@ -42,7 +43,7 @@ export class BlogService {
     return this.toSafeBlog(blog);
   }
 
-  async submitStory(storyData: SubmitStoryDTO) {
+  async submitStory(userId: string, storyData: SubmitStoryDTO) {
     const existingBlog = await blogRepository.getBySlug(storyData.slug);
     if (existingBlog) {
       throw new HttpException(400, "Story slug already exists");
@@ -50,6 +51,7 @@ export class BlogService {
 
     const story = await blogRepository.create({
       ...storyData,
+      userId: userId as unknown as IBlog["userId"],
       status: "pending",
       source: "user",
       category: "User Stories",
@@ -57,6 +59,31 @@ export class BlogService {
       popular: false,
     });
     return this.toSafeBlog(story);
+  }
+
+  async getMyStories(userId: string, authorName: string) {
+    const stories = await blogRepository.getByUser(userId, authorName);
+    return stories.map((story) => this.toSafeBlog(story));
+  }
+
+  private ownsStory(blog: IBlog, userId: string, authorName: string) {
+    return blog.source === "user" && (blog.userId?.toString() === userId || (!blog.userId && blog.authorName === authorName));
+  }
+
+  async updateOwnStory(userId: string, authorName: string, id: string, payload: UpdateOwnStoryDTO, coverImage?: string) {
+    const blog = await blogRepository.getById(id);
+    if (!blog) throw new HttpException(404, "Story not found");
+    if (!this.ownsStory(blog, userId, authorName)) throw new HttpException(403, "You can edit only your own story");
+    const updated = await blogRepository.update(id, { ...payload, ...(coverImage ? { coverImage } : {}), status: "pending", publishDate: undefined });
+    if (!updated) throw new HttpException(404, "Story not found");
+    return this.toSafeBlog(updated);
+  }
+
+  async deleteOwnStory(userId: string, authorName: string, id: string) {
+    const blog = await blogRepository.getById(id);
+    if (!blog) throw new HttpException(404, "Story not found");
+    if (!this.ownsStory(blog, userId, authorName)) throw new HttpException(403, "You can delete only your own story");
+    if (!(await blogRepository.delete(id))) throw new HttpException(404, "Story not found");
   }
 
   async addComment(slug: string, commentData: CreateBlogCommentDTO) {

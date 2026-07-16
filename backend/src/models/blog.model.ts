@@ -9,6 +9,7 @@ import {
 
 export interface IBlog extends BlogType, Document {
   _id: mongoose.Types.ObjectId;
+  userId?: mongoose.Types.ObjectId;
   category: BlogCategoryType;
   status: BlogStatusType;
   source: BlogSourceType;
@@ -28,6 +29,7 @@ const BlogCommentMongoSchema = new Schema<BlogCommentType>(
 
 const BlogMongoSchema = new Schema<IBlog>(
   {
+    userId: { type: Schema.Types.ObjectId, ref: "User", index: true },
     slug: {
       type: String,
       required: true,

@@ -7,6 +7,9 @@ const blogRouter = Router();
 const blogController = new BlogController();
 
 blogRouter.get("/", blogController.getAllBlogs);
+blogRouter.get("/mine", authorizedMiddleware, blogController.getMyStories);
+blogRouter.patch("/mine/:id", authorizedMiddleware, blogUpload.single("coverImage"), blogController.updateMyStory);
+blogRouter.delete("/mine/:id", authorizedMiddleware, blogController.deleteMyStory);
 blogRouter.get("/:slug", blogController.getBlogBySlug);
 blogRouter.post(
   "/stories",

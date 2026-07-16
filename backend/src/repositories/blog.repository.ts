@@ -33,6 +33,13 @@ export class BlogMongoRepository {
     return BlogModel.findOne({ slug });
   }
 
+  async getByUser(userId: string, authorName: string): Promise<IBlog[]> {
+    return BlogModel.find({
+      source: "user",
+      $or: [{ userId }, { userId: { $exists: false }, authorName }],
+    }).sort({ createdAt: -1 });
+  }
+
   async getAllPaginated(
     page: number,
     limit: number,
